@@ -15,6 +15,7 @@ import {
   Keypair,
   PublicKey,
   Transaction,
+  sendAndConfirmTransaction,
 } from "@solana/web3.js";
 
 const headers = createActionHeaders({
@@ -40,10 +41,8 @@ export const OPTIONS = GET;
 export const POST = async (req: Request) => {
   const body: ActionPostRequest = await req.json();
   const connection = new Connection(clusterApiUrl("devnet"));
-  // insert transaction logic here
 
   let sender;
-
   try {
     sender = new PublicKey(body.account);
   } catch (error) {
@@ -54,8 +53,8 @@ export const POST = async (req: Request) => {
         },
       }),
       {
-        status: 400,
         headers: ACTIONS_CORS_HEADERS,
+        status: 400,
       }
     );
   }
@@ -66,9 +65,10 @@ export const POST = async (req: Request) => {
       throw new Error("Not implemented");
     },
     signAllTransactions: () => {
-      throw new Error("Not implemented2");
+      throw new Error("Not implemented");
     },
   };
+
   const provider = new AnchorProvider(
     connection,
     dummyWallet as unknown as AnchorWallet,
@@ -76,25 +76,48 @@ export const POST = async (req: Request) => {
   );
 
   const keypair = Keypair.generate();
-
   const program = getCounterProgram(provider);
+
+  // Get the instruction
   const ix = await program.methods
     .initialize()
     .accounts({ counter: keypair.publicKey })
+    .signers([keypair])
     .instruction();
 
-  const { blockhash, lastValidBlockHeight } =
-    await connection.getLatestBlockhash();
+  // Get latest blockhash
+  const { blockhash } = await connection.getLatestBlockhash();
 
-  const tx = new Transaction({
+  // Create transaction
+  const transaction = new Transaction({
     feePayer: sender,
-    blockhash,
-    lastValidBlockHeight,
+    recentBlockhash: blockhash,
   }).add(ix);
+
+  // Sign with the keypair
+  transaction.sign(keypair);
+
+  //   try {
+  //     const signature = await sendAndConfirmTransaction(
+  //       connection,
+  //       transaction,
+  //       [keypair],
+  //       {
+  //         skipPreflight: false,
+  //         preflightCommitment: "confirmed",
+  //         maxRetries: 5,
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+
+  // For Solana Actions, we need to serialize the transaction
 
   const payload: ActionPostResponse = await createPostResponse({
     fields: {
-      transaction: tx,
+      // Send the serialized transaction as a string
+      transaction,
       type: "transaction",
       message: "Create a counter on-chain",
     },
