@@ -1,5 +1,6 @@
-import { AnchorProvider } from "@coral-xyz/anchor";
-import { getCounterProgram } from "@project/anchor";
+import { Program } from "@coral-xyz/anchor";
+import CounterIDL from "anchor/target/idl/counter.json";
+import { Counter } from "anchor/target/types/counter";
 import {
   ActionPostResponse,
   createActionHeaders,
@@ -8,7 +9,6 @@ import {
   ActionPostRequest,
   ACTIONS_CORS_HEADERS,
 } from "@solana/actions";
-import { AnchorWallet } from "@solana/wallet-adapter-react";
 import {
   clusterApiUrl,
   Connection,
@@ -60,20 +60,12 @@ export const POST = async (req: Request) => {
     );
   }
 
-  const dummyWallet = {
-    publicKey: sender,
-    signTransaction: () => Promise.reject(),
-    signAllTransactions: () => Promise.reject(),
-  };
-  const provider = new AnchorProvider(
-    connection,
-    dummyWallet as unknown as AnchorWallet,
-    { commitment: "confirmed" }
-  );
-
   const keypair = Keypair.generate();
 
-  const program = getCounterProgram(provider);
+  const program = new Program({
+    ...CounterIDL,
+    address: CounterIDL.address,
+  } as Counter);
   const ix = await program.methods
     .initialize()
     .accounts({ counter: keypair.publicKey })
