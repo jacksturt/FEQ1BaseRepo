@@ -89,12 +89,15 @@ export const POST = async (req: Request) => {
     lastValidBlockHeight,
   }).add(ix);
 
+  await tx.partialSign(keypair);
+
   const payload: ActionPostResponse = await createPostResponse({
     fields: {
       transaction: tx,
       type: "transaction",
       message: "Create a counter on-chain",
     },
+    signers: [keypair],
   });
 
   return Response.json(payload, {
