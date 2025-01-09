@@ -1,7 +1,7 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { Keypair } from "@solana/web3.js";
-import { Counter } from "../target/types/Counter";
+import { Counter } from "../target/types/counter";
 
 describe("Counter", () => {
   // Configure the client to use the local cluster.
@@ -11,20 +11,20 @@ describe("Counter", () => {
 
   const program = anchor.workspace.Counter as Program<Counter>;
 
-  const CounterKeypair = Keypair.generate();
+  const counterKeypair = Keypair.generate();
 
   it("Initialize Counter", async () => {
     await program.methods
       .initialize()
       .accounts({
-        Counter: CounterKeypair.publicKey,
+        counter: counterKeypair.publicKey,
         payer: payer.publicKey,
       })
-      .signers([CounterKeypair])
+      .signers([counterKeypair])
       .rpc();
 
-    const currentCount = await program.account.Counter.fetch(
-      CounterKeypair.publicKey
+    const currentCount = await program.account.counter.fetch(
+      counterKeypair.publicKey
     );
 
     expect(currentCount.count).toEqual(0);
@@ -33,11 +33,11 @@ describe("Counter", () => {
   it("Increment Counter", async () => {
     await program.methods
       .increment()
-      .accounts({ Counter: CounterKeypair.publicKey })
+      .accounts({ counter: counterKeypair.publicKey })
       .rpc();
 
-    const currentCount = await program.account.Counter.fetch(
-      CounterKeypair.publicKey
+    const currentCount = await program.account.counter.fetch(
+      counterKeypair.publicKey
     );
 
     expect(currentCount.count).toEqual(1);
@@ -46,11 +46,11 @@ describe("Counter", () => {
   it("Increment Counter Again", async () => {
     await program.methods
       .increment()
-      .accounts({ Counter: CounterKeypair.publicKey })
+      .accounts({ counter: counterKeypair.publicKey })
       .rpc();
 
-    const currentCount = await program.account.Counter.fetch(
-      CounterKeypair.publicKey
+    const currentCount = await program.account.counter.fetch(
+      counterKeypair.publicKey
     );
 
     expect(currentCount.count).toEqual(2);
@@ -59,11 +59,11 @@ describe("Counter", () => {
   it("Decrement Counter", async () => {
     await program.methods
       .decrement()
-      .accounts({ Counter: CounterKeypair.publicKey })
+      .accounts({ counter: counterKeypair.publicKey })
       .rpc();
 
-    const currentCount = await program.account.Counter.fetch(
-      CounterKeypair.publicKey
+    const currentCount = await program.account.counter.fetch(
+      counterKeypair.publicKey
     );
 
     expect(currentCount.count).toEqual(1);
@@ -72,11 +72,11 @@ describe("Counter", () => {
   it("Set Counter value", async () => {
     await program.methods
       .set(42)
-      .accounts({ Counter: CounterKeypair.publicKey })
+      .accounts({ counter: counterKeypair.publicKey })
       .rpc();
 
-    const currentCount = await program.account.Counter.fetch(
-      CounterKeypair.publicKey
+    const currentCount = await program.account.counter.fetch(
+      counterKeypair.publicKey
     );
 
     expect(currentCount.count).toEqual(42);
@@ -87,13 +87,13 @@ describe("Counter", () => {
       .close()
       .accounts({
         payer: payer.publicKey,
-        Counter: CounterKeypair.publicKey,
+        counter: counterKeypair.publicKey,
       })
       .rpc();
 
     // The account should no longer exist, returning null.
-    const userAccount = await program.account.Counter.fetchNullable(
-      CounterKeypair.publicKey
+    const userAccount = await program.account.counter.fetchNullable(
+      counterKeypair.publicKey
     );
     expect(userAccount).toBeNull();
   });
