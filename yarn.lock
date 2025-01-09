@@ -319,6 +319,23 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
+"@dialectlabs/blinks-core@0.16.5":
+  version "0.16.5"
+  resolved "https://registry.yarnpkg.com/@dialectlabs/blinks-core/-/blinks-core-0.16.5.tgz#0ee6b018cfee81cd1114f99c1b229dbcbc6c61d8"
+  integrity sha512-US1oQ5API5wHen4e7W7GyPH+D4i0nB55KKyK8+AGU8QCKrJOvzSOAJR5pC67eAkr1j4D66kwY3CP43qBXvNH8w==
+  dependencies:
+    "@solana/web3.js" "^1.95.1"
+    nanoid "^5.0.7"
+
+"@dialectlabs/blinks@^0.18.3":
+  version "0.18.3"
+  resolved "https://registry.yarnpkg.com/@dialectlabs/blinks/-/blinks-0.18.3.tgz#622decb3c2c7da53b93a03766d641ebc44d94c7b"
+  integrity sha512-5hU5X785QQP/shehDyC4tiMA5Db2uFYQlNuhca/SFI80/BlDvv0SXZ7NthVbGr+2BfvnqIjivD9SWdEd8NtIxA==
+  dependencies:
+    "@dialectlabs/blinks-core" "0.16.5"
+    clsx "^2.1.1"
+    markdown-to-jsx "^7.5.0"
+
 "@eslint-community/eslint-utils@^4.2.0":
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.4.1.tgz#d1145bf2c20132d6400495d6df4bf59362fd9d56"
@@ -831,6 +848,24 @@
   optionalDependencies:
     "@react-native-async-storage/async-storage" "^1.17.7"
 
+"@solana/actions-spec@^2.4.1":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@solana/actions-spec/-/actions-spec-2.4.2.tgz#686a01b48be01a5a4fd625537c7ad8a4bf534b14"
+  integrity sha512-phdlA+JqIrsWw3rmhDynddv9/ZQONPqzYCpPoxN3VMR/2bECsdPWyBgLQpjqk4hgdn7VWQXWzEJtdeFMKxn78g==
+
+"@solana/actions@^1.6.6":
+  version "1.6.6"
+  resolved "https://registry.yarnpkg.com/@solana/actions/-/actions-1.6.6.tgz#0415274ffd4fb1fd50a914d85e43c69c6804d45f"
+  integrity sha512-LkXsXr2NFVgo74ZO8WS1Vli68oJhFBvr7pwh6u6Zb//HJKoG8eHIz24E7Q9gBumWRkduLcLrqtpIgL5SbfO59g==
+  dependencies:
+    "@solana/actions-spec" "^2.4.1"
+    "@solana/qr-code-styling" "^1.6.0"
+    "@solana/web3.js" "^1.61.0"
+    bs58 "^5.0.0"
+    cross-fetch "^3.1.5"
+    js-base64 "^3.7.2"
+    tweetnacl "^1.0.3"
+
 "@solana/buffer-layout-utils@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@solana/buffer-layout-utils/-/buffer-layout-utils-0.2.0.tgz#b45a6cab3293a2eb7597cceb474f229889d875ca"
@@ -910,6 +945,13 @@
     "@solana/codecs-numbers" "2.0.0-rc.1"
     "@solana/codecs-strings" "2.0.0-rc.1"
     "@solana/errors" "2.0.0-rc.1"
+
+"@solana/qr-code-styling@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@solana/qr-code-styling/-/qr-code-styling-1.6.0.tgz#8693bae79ace4b81135e032ee0b60f1ad739c3ef"
+  integrity sha512-KyBmyFKPxQPhUkP0jjnxV2ZeF1R1guTD8Hrd0YvHvMnhtrNEoEEdv4Jpp4W0GN4qCGG2KYOM5d3TgoLD+CNf9Q==
+  dependencies:
+    qrcode-generator "^1.4.3"
 
 "@solana/spl-token-group@^0.0.7":
   version "0.0.7"
@@ -1043,7 +1085,7 @@
     "@solana/wallet-standard-core" "^1.1.1"
     "@solana/wallet-standard-wallet-adapter" "^1.1.2"
 
-"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.95.1":
+"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.61.0", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.95.1":
   version "1.98.0"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.98.0.tgz#21ecfe8198c10831df6f0cfde7f68370d0405917"
   integrity sha512-nz3Q5OeyGFpFCR+erX2f6JPt3sKhzhYcSycBCSPkWjzSVDh/Rr1FqTVMRe58FKO16/ivTUcuJjeS5MyBvpkbzA==
@@ -1950,6 +1992,11 @@ cliui@^8.0.1:
     string-width "^4.2.0"
     strip-ansi "^6.0.1"
     wrap-ansi "^7.0.0"
+
+clsx@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.1.tgz#eed397c9fd8bd882bfb18deab7102049a2f32999"
+  integrity sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==
 
 co@^4.6.0:
   version "4.6.0"
@@ -3832,7 +3879,7 @@ jotai@^2.9.1:
   resolved "https://registry.yarnpkg.com/jotai/-/jotai-2.11.0.tgz#923f8351e0b2d721036af892c0ae25625049d120"
   integrity sha512-zKfoBBD1uDw3rljwHkt0fWuja1B76R7CjznuBO+mSX6jpsO1EBeWNRKpeaQho9yPI/pvCv4recGfgOXGxwPZvQ==
 
-js-base64@^3.7.5:
+js-base64@^3.7.2, js-base64@^3.7.5:
   version "3.7.7"
   resolved "https://registry.yarnpkg.com/js-base64/-/js-base64-3.7.7.tgz#e51b84bf78fbf5702b9541e2cb7bfcb893b43e79"
   integrity sha512-7rCnleh0z2CkXhH67J8K1Ytz0b2Y+yxTPL+/KOJoa20hfnVQ/3/T6W/KflYI4bRHRagNeXeU2bkNGI3v1oS/lw==
@@ -4030,6 +4077,11 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
+markdown-to-jsx@^7.5.0:
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.7.3.tgz#c75927252592696e9e8b2a9557628749d8ab023e"
+  integrity sha512-o35IhJDFP6Fv60zPy+hbvZSQMmgvSGdK5j8NRZ7FeZMY+Bgqw+dSg7SC1ZEzC26++CiOUCqkbq96/c3j/FfTEQ==
+
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/math-intrinsics/-/math-intrinsics-1.1.0.tgz#a0dd74be81e2aa5c2f27e65ce283605ee4e2b7f9"
@@ -4121,6 +4173,11 @@ nanoid@^3.3.6, nanoid@^3.3.7:
   version "3.3.8"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.8.tgz#b1be3030bee36aaff18bacb375e5cce521684baf"
   integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
+
+nanoid@^5.0.7:
+  version "5.0.9"
+  resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-5.0.9.tgz#977dcbaac055430ce7b1e19cf0130cea91a20e50"
+  integrity sha512-Aooyr6MXU6HpvvWXKoVoXwKMs/KyVakWwg7xQfv5/S/RIgJMy0Ifa45H9qqYy7pTCszrHzP21Uk4PZq2HpEM8Q==
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -4538,6 +4595,11 @@ pure-rand@^6.0.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-6.1.0.tgz#d173cf23258231976ccbdb05247c9787957604f2"
   integrity sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==
+
+qrcode-generator@^1.4.3:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/qrcode-generator/-/qrcode-generator-1.4.4.tgz#63f771224854759329a99048806a53ed278740e7"
+  integrity sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==
 
 qrcode@^1.5.4:
   version "1.5.4"
@@ -5248,6 +5310,11 @@ tslib@^2.0.3, tslib@^2.4.0, tslib@^2.8.0:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.8.1.tgz#612efe4ed235d567e8aba5f2a5fab70280ade83f"
   integrity sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==
+
+tweetnacl@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

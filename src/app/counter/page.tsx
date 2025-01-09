@@ -1,4 +1,4 @@
-import CounterFeature from "@/components/Counter/Counter-feature";
+import CounterFeature from "@/components/counter/counter-feature";
 
 export default function Page() {
   return <CounterFeature />;
