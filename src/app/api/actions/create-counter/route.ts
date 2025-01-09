@@ -6,6 +6,7 @@ import {
   createPostResponse,
   ActionGetResponse,
   ActionPostRequest,
+  ACTIONS_CORS_HEADERS,
 } from "@solana/actions";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import {
@@ -41,7 +42,23 @@ export const POST = async (req: Request) => {
   const connection = new Connection(clusterApiUrl("devnet"));
   // insert transaction logic here
 
-  const sender = new PublicKey(body.account);
+  let sender;
+
+  try {
+    sender = new PublicKey(body.account);
+  } catch (error) {
+    return new Response(
+      JSON.stringify({
+        error: {
+          message: "Invalid account",
+        },
+      }),
+      {
+        status: 400,
+        headers: ACTIONS_CORS_HEADERS,
+      }
+    );
+  }
 
   const dummyWallet = {
     publicKey: sender,
