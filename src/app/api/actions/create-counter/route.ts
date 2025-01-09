@@ -81,7 +81,6 @@ export const POST = async (req: Request) => {
   const ix = await program.methods
     .initialize()
     .accounts({ counter: keypair.publicKey })
-    .signers([keypair])
     .instruction();
 
   const { blockhash, lastValidBlockHeight } =
