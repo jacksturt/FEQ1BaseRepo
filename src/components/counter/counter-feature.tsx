@@ -1,12 +1,22 @@
 "use client";
 
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import {
+  AnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 import { WalletButton } from "../solana/solana-provider";
 import { AppHero, ellipsify } from "../ui/ui-layout";
 import { ExplorerLink } from "../cluster/cluster-ui";
 import { useCounterProgram } from "@/components/counter/counter-data-access";
 import { CounterCreate } from "@/components/counter/counter-ui";
-import { Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
+import {
+  Keypair,
+  Transaction,
+  sendAndConfirmTransaction,
+} from "@solana/web3.js";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { getCounterProgram } from "@project/anchor";
 
 export function TestTransaction() {
   const { initialize } = useCounterProgram();
@@ -17,33 +27,81 @@ export function TestTransaction() {
     <button
       className="btn btn-xs lg:btn-md btn-primary"
       onClick={async () => {
+        console.log("clicked");
         if (!signTransaction || !publicKey) return;
-        const decodedTransaction = Transaction.from(
-          Buffer.from(
-            "AgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACNni9t1h8EJKUPudUvdczZQRpykRwu3qmgkzhNOpsStIvyQKlSMvNho3gpRxm5+wei1bWPn3z00uPYCKPBzEsIAgACBKIlyemBY4g7L563vSR4+p3xBm27mp7k3LotsmtC+Td2LxfYVDVjW2R8m2RpHrCmDkPzF3mB0j8xNbV/toBc2AsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkr4ebtDdjtLHmqyqsNe3oRTBylFm1UYfwWFDsBdFiufzQ1rLgY8fUD5+QzParpEfP7iD8cC1XxrjQPSumjE70BAwMAAQIIr69tHw2Ym+0=",
-            "base64"
-          )
-        );
-        const { blockhash, lastValidBlockHeight } =
-          await connection.getLatestBlockhash();
-        const tx = new Transaction({
-          feePayer: publicKey,
-          blockhash,
-          lastValidBlockHeight,
-        }).add(decodedTransaction);
-        const signedTransaction = await signTransaction(tx);
+        // const dummyWallet = {
+        //   publicKey: publicKey,
+        //   signTransaction: () => {
+        //     throw new Error("Not implemented");
+        //   },
+        //   signAllTransactions: () => {
+        //     throw new Error("Not implemented");
+        //   },
+        // };
 
-        // Send the signed transaction
-        const signature = await connection.sendRawTransaction(
-          signedTransaction.serialize(),
+        // const provider = new AnchorProvider(
+        //   connection,
+        //   dummyWallet as unknown as AnchorWallet,
+        //   { commitment: "confirmed", skipPreflight: true }
+        // );
+
+        // const keypair = Keypair.generate();
+        // const program = getCounterProgram(provider);
+
+        // // Get the instruction
+        // const ix = await program.methods
+        //   .initialize()
+        //   .accounts({ counter: keypair.publicKey })
+        //   .signers([keypair])
+        //   .instruction();
+
+        // // Get latest blockhash
+        // const { blockhash, lastValidBlockHeight } =
+        //   await connection.getLatestBlockhash();
+        // // Create transaction
+        // const transaction = new Transaction({
+        //   feePayer: publicKey,
+        //   blockhash,
+        //   lastValidBlockHeight,
+        // }).add(ix);
+
+        // // Sign with the keypair
+        // transaction.partialSign(keypair);
+        // const serializedTransaction = transaction
+        //   .serialize({
+        //     requireAllSignatures: false,
+        //     verifySignatures: false,
+        //   })
+        //   .toString("base64");
+        // console.log(serializedTransaction);
+        // const decodedTransaction = Transaction.from(
+        //   Buffer.from(serializedTransaction, "base64")
+        // );
+
+        const serializedTransaction = await fetch(
+          "/api/actions/create-counter",
           {
-            skipPreflight: false,
-            preflightCommitment: "confirmed",
-            maxRetries: 5,
+            method: "POST",
+            body: JSON.stringify({ account: publicKey.toString() }),
           }
         );
 
-        console.log(signature);
+        const { transaction } = await serializedTransaction.json();
+
+        const decodedTransaction = Transaction.from(
+          Buffer.from(transaction, "base64")
+        );
+        // const signedTransaction = await signTransaction(tx);
+
+        decodedTransaction.feePayer = publicKey;
+        // Send the signed transaction
+        const signature = await signTransaction(decodedTransaction);
+
+        // signature.partialSign(keypair);
+
+        const tx = await connection.sendRawTransaction(signature.serialize());
+
+        console.log("hi", tx);
       }}
       disabled={initialize.isPending}
     >

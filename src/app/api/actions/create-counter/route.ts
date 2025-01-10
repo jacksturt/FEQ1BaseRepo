@@ -86,22 +86,28 @@ export const POST = async (req: Request) => {
     .instruction();
 
   // Get latest blockhash
-  const { blockhash } = await connection.getLatestBlockhash();
-
+  const { blockhash, lastValidBlockHeight } =
+    await connection.getLatestBlockhash();
   // Create transaction
   const transaction = new Transaction({
     feePayer: sender,
-    recentBlockhash: blockhash,
+    blockhash,
+    lastValidBlockHeight,
   }).add(ix);
 
   // Sign with the keypair
-  transaction.sign(keypair);
-
+  transaction.partialSign(keypair);
+  const serializedTransaction = transaction
+    .serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    })
+    .toString("base64");
+  console.log("serializedTransaction\n", serializedTransaction);
+  //   console.log("transaction\n", transaction.serialize());
   //   try {
-  //     const signature = await sendAndConfirmTransaction(
-  //       connection,
-  //       transaction,
-  //       [keypair],
+  //     const signature = await connection.sendRawTransaction(
+  //       transaction.serialize(),
   //       {
   //         skipPreflight: false,
   //         preflightCommitment: "confirmed",
@@ -109,7 +115,7 @@ export const POST = async (req: Request) => {
   //       }
   //     );
   //   } catch (error) {
-  //     console.log(error);
+  //     console.error(error);
   //   }
 
   // For Solana Actions, we need to serialize the transaction
