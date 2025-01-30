@@ -1,5 +1,6 @@
 import { counterRouter } from "@/server/api/routers/counter";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
+import { escrowRouter } from "./routers/escrow";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   counter: counterRouter,
+  escrow: escrowRouter,
 });
 
 // export type definition of API
