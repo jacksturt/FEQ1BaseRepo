@@ -17,12 +17,13 @@ import {
 } from "@solana/web3.js";
 import { AnchorProvider } from "@coral-xyz/anchor";
 import { getCounterProgram } from "@project/anchor";
-import { EscrowCreate, EscrowCreateAsset, EscrowList } from "./escrow-ui";
+import { EscrowCreate, CreateAsset, EscrowList } from "./escrow-ui";
 
 export default function CounterFeature() {
   const { publicKey } = useWallet();
   const { programId } = useCounterProgram();
-
+  // If the user is connected, show the escrow feature
+  // Else, show the connect wallet button
   return publicKey ? (
     <div>
       <AppHero
@@ -38,10 +39,13 @@ export default function CounterFeature() {
           />
         </p>
         <div className="flex flex-col gap-2">
+          {/* Create an escrow */}
           <EscrowCreate />
-          <EscrowCreateAsset />
+          {/* Create an asset */}
+          <CreateAsset />
         </div>
       </AppHero>
+      {/* List all escrows */}
       <EscrowList />
     </div>
   ) : (

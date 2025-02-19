@@ -9,6 +9,7 @@ import {
   useEscrowProgramAccount,
 } from "./escrow-data-access";
 
+// Very simple escrow creation component
 export function EscrowCreate() {
   const { make } = useEscrowProgram();
 
@@ -23,7 +24,8 @@ export function EscrowCreate() {
   );
 }
 
-export function EscrowCreateAsset() {
+// Very simple asset creation component
+export function CreateAsset() {
   const { createAsset } = useEscrowProgram();
 
   return (
@@ -40,9 +42,11 @@ export function EscrowCreateAsset() {
 export function EscrowList() {
   const { accounts, getProgramAccount } = useEscrowProgram();
 
+  // If the program account is loading, show a loading spinner
   if (getProgramAccount.isLoading) {
     return <span className="loading loading-spinner loading-lg"></span>;
   }
+  // If the program account is not found, show an alert
   if (!getProgramAccount.data?.value) {
     return (
       <div className="alert alert-info flex justify-center">
@@ -53,6 +57,7 @@ export function EscrowList() {
       </div>
     );
   }
+  // If the program account is found, show the escrow list
   return (
     <div className={"space-y-6"}>
       {accounts.isLoading ? (
@@ -81,26 +86,31 @@ function EscrowCard({ account }: { account: PublicKey }) {
     account,
   });
 
+  // Memoize the maker's public key, or "..." if the maker query is still loading
   const maker = useMemo(
     () => accountQuery.data?.maker.toString() ?? "...",
     [accountQuery.data?.maker]
   );
 
+  // Memoize the mintA, or "..." if the mintA query is still loading
   const mintA = useMemo(
     () => accountQuery.data?.mintA.toString() ?? "...",
     [accountQuery.data?.mintA]
   );
 
+  // Memoize the mintB, or "..." if the mintB query is still loading
   const mintB = useMemo(
     () => accountQuery.data?.mintB.toString() ?? "...",
     [accountQuery.data?.mintB]
   );
 
+  // Memoize the amount, or "..." if the amount query is still loading
   const amount = useMemo(
     () => accountQuery.data?.recieve.toString() ?? "...",
     [accountQuery.data?.recieve]
   );
 
+  // Memoize the vault amount, or "..." if the vault amount query is still loading
   const vaultAmount = useMemo(
     () =>
       vaultQuery.data?.value?.data?.parsed?.info?.tokenAmount?.uiAmount ??
@@ -108,13 +118,12 @@ function EscrowCard({ account }: { account: PublicKey }) {
     [vaultQuery.data?.value?.data?.parsed?.info?.tokenAmount?.uiAmount]
   );
 
-  // if (!counterQuery.data) {
-  //   return <></>;
-  // }
-
-  return accountQuery.isLoading ? (
-    <span className="loading loading-spinner loading-lg"></span>
-  ) : (
+  // If the escrow account is loading, show a loading spinner
+  if (accountQuery.isLoading) {
+    return <span className="loading loading-spinner loading-lg"></span>;
+  }
+  // If the escrow account is not loading, show the escrow card
+  return (
     <div className="card card-bordered border-base-300 border-4 text-neutral-content">
       <div className="card-body items-center text-center">
         <div className="space-y-6">
@@ -130,12 +139,14 @@ function EscrowCard({ account }: { account: PublicKey }) {
             </h2>
           </div>
           <div className="text-center space-y-4">
+            {/* Link to the escrow account on the explorer */}
             <p>
               <ExplorerLink
                 path={`account/${account}`}
                 label={ellipsify(account.toString())}
               />
             </p>
+            {/* Button to take the escrow */}
             <button
               className="btn btn-xs btn-secondary btn-outline"
               onClick={() => {

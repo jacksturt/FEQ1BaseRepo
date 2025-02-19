@@ -7,6 +7,7 @@ use anchor_spl::{
 use crate::state::Escrow;
 
 #[derive(Accounts)]
+// Pass in the seed for the escrow
 #[instruction(seed: u64)]
 pub struct Make<'info> {
     #[account(mut)]
@@ -14,6 +15,7 @@ pub struct Make<'info> {
     #[account(
         init,
         payer = maker,
+        // Pass in the maker's public key and the seed for the escrow
         seeds = [b"escrow", maker.key().as_ref(), seed.to_le_bytes().as_ref()],
         space = Escrow::INIT_SPACE,
         bump,
@@ -55,6 +57,7 @@ impl<'info> Make<'info> {
         amount_y: u64,
         bumps: &MakeBumps,
     ) -> Result<()> {
+        // Set the escrow account data
         self.escrow.set_inner(Escrow {
             seed,
             mint_x: self.mint_x.to_account_info().key(),
@@ -64,21 +67,23 @@ impl<'info> Make<'info> {
             bump: bumps.escrow,
         });
 
+        // Transfer the maker's tokens to the vault
         return self.transfer(amount_x);
     }
 
     pub fn transfer(&mut self, deposit: u64) -> Result<()> {
+        // Get the cpi program
         let cpi_program = self.token_program.to_account_info();
-
+        // Set the cpi accounts
         let cpi_accounts = TransferChecked {
             from: self.maker_ata_x.to_account_info(),
             to: self.vault.to_account_info(),
             authority: self.maker.to_account_info(),
             mint: self.mint_x.to_account_info(),
         };
-
+        // Set the cpi context
         let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
-
+        // Transfer the tokens
         transfer_checked(cpi_ctx, deposit, self.mint_x.decimals)
     }
 }

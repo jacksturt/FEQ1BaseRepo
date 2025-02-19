@@ -32,7 +32,6 @@ import {
   sol,
 } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
-import { base58 } from "@metaplex-foundation/umi/serializers";
 
 export function useEscrowProgram() {
   const { connection } = useConnection();
@@ -41,6 +40,7 @@ export function useEscrowProgram() {
   const transactionToast = useTransactionToast();
   const provider = useAnchorProvider();
   const createEscrow = api.escrow.create.useMutation();
+  // Memoize the program id and program so we don't have to re-create them on every render
   const programId = useMemo(
     () => getEscrowProgramId(cluster.network as Cluster),
     [cluster]
@@ -49,17 +49,19 @@ export function useEscrowProgram() {
     () => getEscrowProgram(provider, programId),
     [provider, programId]
   );
-
+  // Fetch all escrow accounts
   const accounts = useQuery({
     queryKey: ["Escrow", "all", { cluster }],
     queryFn: () => program.account.escrow.all(),
   });
 
+  // Fetch the program account
   const getProgramAccount = useQuery({
     queryKey: ["get-program-account", { cluster }],
     queryFn: () => connection.getParsedAccountInfo(programId),
   });
 
+  // Create a metaplex asset TODO: Finish implementing this like in class
   const createAsset = useMutation({
     mutationKey: ["Escrow", "create-asset", { cluster }],
     mutationFn: async () => {
@@ -77,36 +79,44 @@ export function useEscrowProgram() {
     },
   });
 
+  // Create an escrow
   const make = useMutation({
     mutationKey: ["Escrow", "make", { cluster }],
     mutationFn: async () => {
+      // Define the mint for the asset (devnet usdc now)
       const mintA = new PublicKey(
-        "3mfzSSRKGHmmhQuK4e3AMf3vFepR3PavGwXMAP1qqMuU"
+        "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
       );
-
+      // Get the associated token address for the maker
       const makerAtaA = await getAssociatedTokenAddress(
         mintA,
         provider.publicKey
       );
+      // Generate a random seed for the escrow
       const seed = new BN(Date.now().toString());
       console.log(seed.toString());
+      // Get the escrow address
       let escrow = PublicKey.findProgramAddressSync(
         [
           Buffer.from("escrow"),
           provider.publicKey.toBuffer(),
+          // See that this is different from test files. In the client side we need to use toArrayLike to convert the number to a buffer
           seed.toArrayLike(Buffer, "le", 8),
         ],
         program.programId
       )[0];
+      // Get the associated token address for the vault (note the true flag since the vault is owned by the escrow, hence off chain)
       const vault = await getAssociatedTokenAddress(
         mintA,
         escrow,
         true,
         TOKEN_PROGRAM_ID
       );
+      // Define the mint for the other token (random mint I created)
       const mintB = new PublicKey(
         "8TPeGMnHwsz5izHkgfq6cTgsep87VudMns7SbwEDPjTH"
       );
+      // Get the associated token address for the maker
 
       const context = {
         maker: provider.publicKey,
@@ -119,19 +129,22 @@ export function useEscrowProgram() {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       };
-
+      // Log the context
       Object.entries(context).forEach(([key, value]) => {
         console.log(key, value.toString());
       });
+      // Define the amount to deposit
       const deposit = new BN(500);
+      // Define the amount to receive
       const receive = new BN(100);
-
+      // Make the escrow
       const tx = await program.methods
         .make(seed, deposit, receive)
         .accounts(context)
         .rpc({
           skipPreflight: true,
         });
+      // Return the signature and the escrow address
       return {
         signature: tx,
         escrow,
@@ -154,6 +167,7 @@ export function useEscrowProgram() {
       receive,
     }) => {
       transactionToast(signature);
+      // Create the escrow account in the database
       await createEscrow.mutate({
         publicKey: escrow.toBase58(),
         vaultPublicKey: vault.toBase58(),
@@ -164,6 +178,7 @@ export function useEscrowProgram() {
         seed: seed.toString(),
         maker: provider.publicKey.toBase58(),
       });
+      // Refetch the accounts
       return accounts.refetch();
     },
     onError: () => toast.error("Failed to initialize account"),
@@ -178,42 +193,47 @@ export function useEscrowProgram() {
     createAsset,
   };
 }
-
+// For using a specific escrow account
 export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
   const { cluster } = useCluster();
   const transactionToast = useTransactionToast();
-  const { program, accounts } = useEscrowProgram();
+  const { program } = useEscrowProgram();
   const provider = useAnchorProvider();
   const { connection } = useConnection();
   const addTaker = api.escrow.addTaker.useMutation();
 
+  // Fetch the escrow account
   const accountQuery = useQuery({
     queryKey: ["Escrow", "fetch", { cluster, account }],
     queryFn: () => program.account.escrow.fetch(account),
   });
 
+  // Fetch the vault account
   const vaultQuery = useQuery({
     queryKey: ["Escrow", "vault", { cluster, account }],
     queryFn: async () => {
       if (!accountQuery.data?.mintA) {
         return;
       }
+      // Get the associated token address for the vault (note the true flag)
       const vault = await getAssociatedTokenAddress(
         accountQuery.data?.mintA,
         account,
         true,
         TOKEN_PROGRAM_ID
       );
-
+      // Get the account info for the vault
       const vaultAccount = (await connection.getParsedAccountInfo(
         vault
       )) as unknown as RpcResponseAndContext<AccountInfo<ParsedAccountData>>;
       console.log(vaultAccount);
+      // Return the vault account
       return vaultAccount;
     },
     enabled: !!accountQuery.data?.mintA,
   });
 
+  // Fetch the escrow account
   const escrowQuery = api.escrow.read.useQuery(
     {
       publicKey: account.toBase58(),
@@ -223,6 +243,7 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
     }
   );
 
+  // Fill the other side of the escrow
   const takeMutation = useMutation({
     mutationKey: ["Escrow", "take", { cluster, account }],
     mutationFn: async () => {
@@ -235,19 +256,22 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
         account,
         true
       );
-
+      // Get the associated token address for the taker
       const takerAtaA = await getAssociatedTokenAddress(
         accountQuery.data?.mintA,
         provider.publicKey
       );
+      // Get the associated token address for the taker (note we don't need to initialize since we use init_if_needed in the contract code)
       const takerAtaB = await getAssociatedTokenAddress(
         accountQuery.data?.mintB,
         provider.publicKey
       );
+      // Get the associated token address for the maker
       const makerAtaB = await getAssociatedTokenAddress(
         accountQuery.data?.mintB,
         accountQuery.data?.maker
       );
+      // Define the context
       const context = {
         maker: accountQuery.data?.maker,
         taker: provider.publicKey,
@@ -262,20 +286,22 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
       };
-
+      // Log the context
       Object.entries(context).forEach(([key, value]) => {
         console.log(key, value.toString());
       });
-
+      // Take the escrow
       const tx = await program.methods.take().accounts(context).rpc({
         skipPreflight: true,
       });
+      // Return the signature
       return {
         signature: tx,
       };
     },
     onSuccess: async ({ signature }) => {
       transactionToast(signature);
+      // Add the taker to the escrow in the database
       await addTaker.mutate(
         {
           publicKey: account.toBase58(),
@@ -283,6 +309,7 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
         },
         {
           onSuccess: async () => {
+            // Refetch the escrow account
             await accountQuery.refetch();
           },
         }

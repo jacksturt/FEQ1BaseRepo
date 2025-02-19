@@ -1,5 +1,7 @@
 use anchor_lang::prelude::*;
 
+// Define the escrow account
+// We want to store the seed, the bump, the two mints, and the amounts for each side of the escrow
 #[account]
 pub struct Escrow {
     pub seed: u64,
