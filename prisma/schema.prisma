@@ -23,22 +23,39 @@ model Counter {
     updatedAt DateTime @updatedAt
 }
 
+// Store everything we want about the escrow. Note the separation of database-only fields at the top, and shared fields at the bottom.
 model Escrow {
-    id              Int          @id @default(autoincrement())
-    publicKey       String       @unique
+    // Database-only fields
+    id        Int          @id @default(autoincrement())
+    status    EscrowStatus @default(CREATED)
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @updatedAt
+
+    // Shared fields
+    publicKey       String  @unique
+    // A public key for the vault
     vaultPublicKey  String
+    // A mint for the first token
     mintA           String
+    // A mint for the second token
     mintB           String
+    // The amount of the first token in the vault. 
+    // Could also use an Int/decimal, but String is safe for big numbers, 
+    // yet you need to transform it to a number when performing calculations.
     amountInVault   String
+    // The amount of the second token to receive.
+    // Could also use an Int/decimal, but String is safe for big numbers,
+    // yet you need to transform it to a number when performing calculations.
     amountToReceive String
+    // The seed for the escrow
     seed            String
-    status          EscrowStatus @default(CREATED)
+    // A public key for the maker
     maker           String
+    // A public key for the taker
     taker           String?
-    createdAt       DateTime     @default(now())
-    updatedAt       DateTime     @updatedAt
 }
 
+// The status of the escrow.
 enum EscrowStatus {
     CREATED
     TAKEN

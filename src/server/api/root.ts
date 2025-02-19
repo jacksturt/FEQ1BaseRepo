@@ -9,6 +9,7 @@ import { escrowRouter } from "./routers/escrow";
  */
 export const appRouter = createTRPCRouter({
   counter: counterRouter,
+  // Register the escrow router at the top level
   escrow: escrowRouter,
 });
 
