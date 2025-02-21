@@ -20,33 +20,33 @@ pub struct Make<'info> {
         space = Escrow::INIT_SPACE,
         bump,
     )]
-    pub escrow: Account<'info, Escrow>,
-    pub mint_x: InterfaceAccount<'info, Mint>,
-    pub mint_y: InterfaceAccount<'info, Mint>,
+    pub escrow: Box<Account<'info, Escrow>>,
+    pub mint_x: Box<InterfaceAccount<'info, Mint>>,
+    pub mint_y: Box<InterfaceAccount<'info, Mint>>,
     #[account(
         init,
         payer = maker,
         associated_token::mint = mint_x,
         associated_token::authority = escrow,
     )]
-    pub vault: InterfaceAccount<'info, TokenAccount>,
+    pub vault: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
         mut,
         associated_token::mint = mint_x,
         associated_token::authority = maker,
     )]
-    pub maker_ata_x: InterfaceAccount<'info, TokenAccount>,
+    pub maker_ata_x: Box<InterfaceAccount<'info, TokenAccount>>,
     #[account(
         init_if_needed,
         payer = maker,
         associated_token::mint = mint_y,
         associated_token::authority = maker,
     )]
-    pub maker_ata_y: InterfaceAccount<'info, TokenAccount>,
+    pub maker_ata_y: Box<InterfaceAccount<'info, TokenAccount>>,
     /// CHECK: This is not dangerous because we don't read or write from this account
-    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
     pub token_program: Interface<'info, TokenInterface>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 impl<'info> Make<'info> {

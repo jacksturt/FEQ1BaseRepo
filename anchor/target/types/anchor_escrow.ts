@@ -1,7 +1,13 @@
-{
-  "address": "EScWvgGnQXgHszzc8PLGeRKZWY6DRrnpJybvwCLct4qu",
+/**
+ * Program IDL in camelCase format in order to be used in JS/TS.
+ *
+ * Note that this is only a type helper and is not the actual IDL. The original
+ * IDL can be found at `target/idl/anchor_escrow.json`.
+ */
+export type AnchorEscrow = {
+  "address": "CqBh8BryDFbeG8i2gzJDvNS81hiJ96jYtSW3qPk1pt6V",
   "metadata": {
-    "name": "anchor_escrow_q424",
+    "name": "anchorEscrow",
     "version": "0.1.0",
     "spec": "0.1.0",
     "description": "Created with Anchor"
@@ -24,102 +30,6 @@
           "name": "maker",
           "writable": true,
           "signer": true
-        },
-        {
-          "name": "mint_a"
-        },
-        {
-          "name": "mint_b"
-        },
-        {
-          "name": "maker_ata_a",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "maker"
-              },
-              {
-                "kind": "const",
-                "value": [
-                  6,
-                  221,
-                  246,
-                  225,
-                  215,
-                  101,
-                  161,
-                  147,
-                  217,
-                  203,
-                  225,
-                  70,
-                  206,
-                  235,
-                  121,
-                  172,
-                  28,
-                  180,
-                  133,
-                  237,
-                  95,
-                  91,
-                  55,
-                  145,
-                  58,
-                  140,
-                  245,
-                  133,
-                  126,
-                  255,
-                  0,
-                  169
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "mint_a"
-              }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
-              ]
-            }
-          }
         },
         {
           "name": "escrow",
@@ -149,6 +59,12 @@
           }
         },
         {
+          "name": "mintX"
+        },
+        {
+          "name": "mintY"
+        },
+        {
           "name": "vault",
           "writable": true,
           "pda": {
@@ -196,7 +112,7 @@
               },
               {
                 "kind": "account",
-                "path": "mint_a"
+                "path": "mintX"
               }
             ],
             "program": {
@@ -239,15 +155,195 @@
           }
         },
         {
-          "name": "associated_token_program",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          "name": "makerAtaX",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "maker"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mintX"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
         },
         {
-          "name": "token_program"
+          "name": "makerAtaY",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "maker"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mintY"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         }
       ],
       "args": [
@@ -256,11 +352,11 @@
           "type": "u64"
         },
         {
-          "name": "deposit",
+          "name": "amountX",
           "type": "u64"
         },
         {
-          "name": "receive",
+          "name": "amountY",
           "type": "u64"
         }
       ]
@@ -281,25 +377,28 @@
         {
           "name": "maker",
           "writable": true,
-          "signer": true,
+          "signer": true
+        },
+        {
+          "name": "mintX",
           "relations": [
             "escrow"
           ]
         },
         {
-          "name": "mint_a",
+          "name": "mintY",
           "relations": [
             "escrow"
           ]
         },
         {
-          "name": "maker_ata_a",
+          "name": "vault",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "maker"
+                "path": "escrow"
               },
               {
                 "kind": "const",
@@ -340,7 +439,8 @@
               },
               {
                 "kind": "account",
-                "path": "mint_a"
+                "path": "escrow.mint_x",
+                "account": "escrow"
               }
             ],
             "program": {
@@ -405,19 +505,19 @@
               {
                 "kind": "account",
                 "path": "escrow.seed",
-                "account": "Escrow"
+                "account": "escrow"
               }
             ]
           }
         },
         {
-          "name": "vault",
+          "name": "makerAtaX",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "escrow"
+                "path": "maker"
               },
               {
                 "kind": "const",
@@ -458,7 +558,7 @@
               },
               {
                 "kind": "account",
-                "path": "mint_a"
+                "path": "mintX"
               }
             ],
             "program": {
@@ -501,30 +601,30 @@
           }
         },
         {
-          "name": "associated_token_program",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          "name": "tokenProgram"
         },
         {
-          "name": "token_program"
-        },
-        {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         }
       ],
       "args": []
     },
     {
-      "name": "take",
+      "name": "schwap",
       "discriminator": [
-        149,
-        226,
-        52,
-        104,
-        6,
-        142,
-        230,
-        39
+        39,
+        169,
+        208,
+        47,
+        189,
+        205,
+        5,
+        186
       ],
       "accounts": [
         {
@@ -534,153 +634,70 @@
         },
         {
           "name": "maker",
-          "writable": true,
+          "writable": true
+        },
+        {
+          "name": "mintX",
           "relations": [
             "escrow"
           ]
         },
         {
-          "name": "mint_a",
+          "name": "mintY",
           "relations": [
             "escrow"
           ]
         },
         {
-          "name": "mint_b",
-          "relations": [
-            "escrow"
-          ]
-        },
-        {
-          "name": "taker_ata_a",
+          "name": "vault",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "taker"
+                "path": "escrow"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "mint_a"
-              }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
-              ]
-            }
-          }
-        },
-        {
-          "name": "taker_ata_b",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "taker"
-              },
-              {
-                "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "mint_b"
-              }
-            ],
-            "program": {
-              "kind": "const",
-              "value": [
-                140,
-                151,
-                37,
-                143,
-                78,
-                36,
-                137,
-                241,
-                187,
-                61,
-                16,
-                41,
-                20,
-                142,
-                13,
-                131,
-                11,
-                90,
-                19,
-                153,
-                218,
-                255,
-                16,
-                132,
-                4,
-                142,
-                123,
-                216,
-                219,
-                233,
-                248,
-                89
-              ]
-            }
-          }
-        },
-        {
-          "name": "maker_ata_b",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "account",
-                "path": "maker"
-              },
-              {
-                "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "mint_b"
+                "path": "escrow.mint_x",
+                "account": "escrow"
               }
             ],
             "program": {
@@ -745,27 +762,60 @@
               {
                 "kind": "account",
                 "path": "escrow.seed",
-                "account": "Escrow"
+                "account": "escrow"
               }
             ]
           }
         },
         {
-          "name": "vault",
+          "name": "makerAtaY",
           "writable": true,
           "pda": {
             "seeds": [
               {
                 "kind": "account",
-                "path": "escrow"
+                "path": "maker"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
               },
               {
                 "kind": "account",
-                "path": "token_program"
-              },
-              {
-                "kind": "account",
-                "path": "mint_a"
+                "path": "mintY"
               }
             ],
             "program": {
@@ -808,15 +858,196 @@
           }
         },
         {
-          "name": "associated_token_program",
-          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+          "name": "takerAtaY",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "taker"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mintY"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
         },
         {
-          "name": "token_program"
+          "name": "takerAtaX",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "taker"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "mintX"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
         },
         {
-          "name": "system_program",
+          "name": "systemProgram",
           "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associatedTokenProgram",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
         }
       ],
       "args": []
@@ -824,7 +1055,7 @@
   ],
   "accounts": [
     {
-      "name": "Escrow",
+      "name": "escrow",
       "discriminator": [
         31,
         213,
@@ -837,16 +1068,9 @@
       ]
     }
   ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "CustomError",
-      "msg": "Custom error message"
-    }
-  ],
   "types": [
     {
-      "name": "Escrow",
+      "name": "escrow",
       "type": {
         "kind": "struct",
         "fields": [
@@ -855,19 +1079,19 @@
             "type": "u64"
           },
           {
-            "name": "maker",
+            "name": "mintX",
             "type": "pubkey"
           },
           {
-            "name": "mint_a",
+            "name": "mintY",
             "type": "pubkey"
           },
           {
-            "name": "mint_b",
-            "type": "pubkey"
+            "name": "amountX",
+            "type": "u64"
           },
           {
-            "name": "recieve",
+            "name": "amountY",
             "type": "u64"
           },
           {
@@ -877,12 +1101,5 @@
         ]
       }
     }
-  ],
-  "constants": [
-    {
-      "name": "SEED",
-      "type": "string",
-      "value": "\"anchor\""
-    }
   ]
-}
+};

@@ -8,20 +8,12 @@ import {
 import { WalletButton } from "../solana/solana-provider";
 import { AppHero, ellipsify } from "../ui/ui-layout";
 import { ExplorerLink } from "../cluster/cluster-ui";
-import { useCounterProgram } from "@/components/counter/counter-data-access";
-import { CounterCreate } from "@/components/counter/counter-ui";
-import {
-  Keypair,
-  Transaction,
-  sendAndConfirmTransaction,
-} from "@solana/web3.js";
-import { AnchorProvider } from "@coral-xyz/anchor";
-import { getCounterProgram } from "@project/anchor";
 import { EscrowCreate, CreateAsset, EscrowList } from "./escrow-ui";
+import { useEscrowProgram } from "./escrow-data-access";
 
 export default function CounterFeature() {
   const { publicKey } = useWallet();
-  const { programId } = useCounterProgram();
+  const { programId } = useEscrowProgram();
   // If the user is connected, show the escrow feature
   // Else, show the connect wallet button
   return publicKey ? (

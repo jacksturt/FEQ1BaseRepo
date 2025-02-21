@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
+    token::Token,
     token_interface::{
         close_account, transfer_checked, CloseAccount, Mint, TokenAccount, TokenInterface,
         TransferChecked,
@@ -51,9 +52,9 @@ pub struct Take<'info> {
         associated_token::mint = mint_x,
         associated_token::authority = taker,
     )]
-    pub taker_ata_x: InterfaceAccount<'info, TokenAccount>,
-    pub token_program: Interface<'info, TokenInterface>,
+    pub taker_ata_x: Box<InterfaceAccount<'info, TokenAccount>>,
     pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
 }
 

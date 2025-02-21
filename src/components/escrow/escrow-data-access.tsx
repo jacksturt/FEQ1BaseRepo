@@ -21,6 +21,7 @@ import { api } from "@/trpc/react";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddress,
+  TOKEN_2022_PROGRAM_ID,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { BN } from "@coral-xyz/anchor";
@@ -85,12 +86,13 @@ export function useEscrowProgram() {
     mutationFn: async () => {
       // Define the mint for the asset (devnet usdc now)
       const mintA = new PublicKey(
-        "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"
+        "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
       );
       // Get the associated token address for the maker
       const makerAtaA = await getAssociatedTokenAddress(
         mintA,
-        provider.publicKey
+        provider.publicKey,
+        false
       );
       // Generate a random seed for the escrow
       const seed = new BN(Date.now().toString());
@@ -106,23 +108,23 @@ export function useEscrowProgram() {
         program.programId
       )[0];
       // Get the associated token address for the vault (note the true flag since the vault is owned by the escrow, hence off chain)
-      const vault = await getAssociatedTokenAddress(
-        mintA,
-        escrow,
-        true,
-        TOKEN_PROGRAM_ID
-      );
+      const vault = await getAssociatedTokenAddress(mintA, escrow, true);
       // Define the mint for the other token (random mint I created)
       const mintB = new PublicKey(
-        "8TPeGMnHwsz5izHkgfq6cTgsep87VudMns7SbwEDPjTH"
+        "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
       );
       // Get the associated token address for the maker
-
+      const makerAtaB = await getAssociatedTokenAddress(
+        mintB,
+        provider.publicKey,
+        false
+      );
       const context = {
         maker: provider.publicKey,
-        mintA,
-        mintB,
-        makerAtaA,
+        mintX: mintA,
+        mintY: mintB,
+        makerAtaX: makerAtaA,
+        makerAtaY: makerAtaB,
         escrow,
         vault,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -140,17 +142,15 @@ export function useEscrowProgram() {
       // Make the escrow
       const tx = await program.methods
         .make(seed, deposit, receive)
-        .accounts(context)
-        .rpc({
-          skipPreflight: true,
-        });
+        .accountsStrict(context)
+        .rpc({});
       // Return the signature and the escrow address
       return {
         signature: tx,
         escrow,
         vault,
-        mintA,
-        mintB,
+        mintX: mintA,
+        mintY: mintB,
         deposit,
         receive,
         seed,
@@ -161,8 +161,8 @@ export function useEscrowProgram() {
       seed,
       escrow,
       vault,
-      mintA,
-      mintB,
+      mintX,
+      mintY,
       deposit,
       receive,
     }) => {
@@ -171,8 +171,8 @@ export function useEscrowProgram() {
       await createEscrow.mutate({
         publicKey: escrow.toBase58(),
         vaultPublicKey: vault.toBase58(),
-        mintA: mintA.toBase58(),
-        mintB: mintB.toBase58(),
+        mintA: mintX.toBase58(),
+        mintB: mintY.toBase58(),
         amountInVault: deposit.toString(),
         amountToReceive: receive.toString(),
         seed: seed.toString(),
@@ -181,7 +181,15 @@ export function useEscrowProgram() {
       // Refetch the accounts
       return accounts.refetch();
     },
-    onError: () => toast.error("Failed to initialize account"),
+    onError: async (e) => {
+      toast.error("Failed to initialize account");
+      try {
+        const logs = await (e as any).getLogs();
+        console.log(logs);
+      } catch (e) {
+        console.log(e);
+      }
+    },
   });
 
   return {
@@ -291,9 +299,7 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
         console.log(key, value.toString());
       });
       // Take the escrow
-      const tx = await program.methods.take().accounts(context).rpc({
-        skipPreflight: true,
-      });
+      const tx = await program.methods.take().accounts(context).rpc();
       // Return the signature
       return {
         signature: tx,

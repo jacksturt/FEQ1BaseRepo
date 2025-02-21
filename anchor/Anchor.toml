@@ -5,8 +5,8 @@ anchor_version = "0.30.1"
 resolution = true
 skip-lint = false
 
-[programs.localnet]
-counter = "coUnmi3oBUtwtd9fjeAvSsJssXh5A5xyPbhpewyzRVF"
+[programs.mainnet]
+escrow = "CqBh8BryDFbeG8i2gzJDvNS81hiJ96jYtSW3qPk1pt6V"
 
 [registry]
 url = "https://api.apr.dev"
