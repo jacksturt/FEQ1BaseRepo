@@ -85,12 +85,12 @@ export function useEscrowProgram() {
     mutationKey: ["Escrow", "make", { cluster }],
     mutationFn: async () => {
       // Define the mint for the asset (devnet usdc now)
-      const mintA = new PublicKey(
+      const mintX = new PublicKey(
         "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
       );
       // Get the associated token address for the maker
-      const makerAtaA = await getAssociatedTokenAddress(
-        mintA,
+      const makerAtaX = await getAssociatedTokenAddress(
+        mintX,
         provider.publicKey,
         false
       );
@@ -108,23 +108,23 @@ export function useEscrowProgram() {
         program.programId
       )[0];
       // Get the associated token address for the vault (note the true flag since the vault is owned by the escrow, hence off chain)
-      const vault = await getAssociatedTokenAddress(mintA, escrow, true);
+      const vault = await getAssociatedTokenAddress(mintX, escrow, true);
       // Define the mint for the other token (random mint I created)
-      const mintB = new PublicKey(
+      const mintY = new PublicKey(
         "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263"
       );
       // Get the associated token address for the maker
-      const makerAtaB = await getAssociatedTokenAddress(
-        mintB,
+      const makerAtaY = await getAssociatedTokenAddress(
+        mintY,
         provider.publicKey,
         false
       );
       const context = {
         maker: provider.publicKey,
-        mintX: mintA,
-        mintY: mintB,
-        makerAtaX: makerAtaA,
-        makerAtaY: makerAtaB,
+        mintX: mintX,
+        mintY: mintY,
+        makerAtaX,
+        makerAtaY,
         escrow,
         vault,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -149,8 +149,8 @@ export function useEscrowProgram() {
         signature: tx,
         escrow,
         vault,
-        mintX: mintA,
-        mintY: mintB,
+        mintX: mintX,
+        mintY: mintY,
         deposit,
         receive,
         seed,
@@ -220,12 +220,12 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
   const vaultQuery = useQuery({
     queryKey: ["Escrow", "vault", { cluster, account }],
     queryFn: async () => {
-      if (!accountQuery.data?.mintA) {
+      if (!accountQuery.data?.mintX) {
         return;
       }
       // Get the associated token address for the vault (note the true flag)
       const vault = await getAssociatedTokenAddress(
-        accountQuery.data?.mintA,
+        accountQuery.data?.mintX,
         account,
         true,
         TOKEN_PROGRAM_ID
@@ -238,7 +238,7 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
       // Return the vault account
       return vaultAccount;
     },
-    enabled: !!accountQuery.data?.mintA,
+    enabled: !!accountQuery.data?.mintX,
   });
 
   // Fetch the escrow account
@@ -260,34 +260,34 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
       }
 
       const vault = await getAssociatedTokenAddress(
-        accountQuery.data?.mintA,
+        accountQuery.data?.mintX,
         account,
         true
       );
       // Get the associated token address for the taker
-      const takerAtaA = await getAssociatedTokenAddress(
-        accountQuery.data?.mintA,
+      const takerAtaX = await getAssociatedTokenAddress(
+        accountQuery.data?.mintX,
         provider.publicKey
       );
       // Get the associated token address for the taker (note we don't need to initialize since we use init_if_needed in the contract code)
-      const takerAtaB = await getAssociatedTokenAddress(
-        accountQuery.data?.mintB,
+      const takerAtaY = await getAssociatedTokenAddress(
+        accountQuery.data?.mintY,
         provider.publicKey
       );
       // Get the associated token address for the maker
-      const makerAtaB = await getAssociatedTokenAddress(
-        accountQuery.data?.mintB,
+      const makerAtaY = await getAssociatedTokenAddress(
+        accountQuery.data?.mintY,
         accountQuery.data?.maker
       );
       // Define the context
       const context = {
         maker: accountQuery.data?.maker,
         taker: provider.publicKey,
-        mintA: accountQuery.data?.mintA,
-        mintB: accountQuery.data?.mintB,
-        takerAtaA,
-        takerAtaB,
-        makerAtaB,
+        mintX: accountQuery.data?.mintX,
+        mintY: accountQuery.data?.mintY,
+        takerAtaX,
+        takerAtaY,
+        makerAtaY,
         vault,
         escrow: account,
         tokenProgram: TOKEN_PROGRAM_ID,
@@ -299,7 +299,81 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
         console.log(key, value.toString());
       });
       // Take the escrow
-      const tx = await program.methods.take().accounts(context).rpc();
+      const tx = await program.methods.take().accountsStrict(context).rpc();
+      // Return the signature
+      return {
+        signature: tx,
+      };
+    },
+    onSuccess: async ({ signature }) => {
+      transactionToast(signature);
+      // Add the taker to the escrow in the database
+      await addTaker.mutate(
+        {
+          publicKey: account.toBase58(),
+          taker: provider.publicKey.toBase58(),
+        },
+        {
+          onSuccess: async () => {
+            // Refetch the escrow account
+            await accountQuery.refetch();
+          },
+        }
+      );
+    },
+  });
+
+  const refundMutation = useMutation({
+    mutationKey: ["Escrow", "refund", { cluster, account }],
+    mutationFn: async () => {
+      if (!accountQuery.data) {
+        throw new Error("No account data");
+      }
+
+      const vault = await getAssociatedTokenAddress(
+        accountQuery.data?.mintX,
+        account,
+        true
+      );
+      // Get the associated token address for the taker
+      const takerAtaA = await getAssociatedTokenAddress(
+        accountQuery.data?.mintX,
+        provider.publicKey
+      );
+      // Get the associated token address for the taker (note we don't need to initialize since we use init_if_needed in the contract code)
+      const takerAtaB = await getAssociatedTokenAddress(
+        accountQuery.data?.mintY,
+        provider.publicKey
+      );
+      // Get the associated token address for the maker
+      const makerAtaB = await getAssociatedTokenAddress(
+        accountQuery.data?.mintY,
+        accountQuery.data?.maker
+      );
+      const makerAtaX = await getAssociatedTokenAddress(
+        accountQuery.data?.mintX,
+        provider.publicKey,
+        false
+      );
+      // Define the context
+      const context = {
+        maker: accountQuery.data?.maker,
+        taker: provider.publicKey,
+        mintX: accountQuery.data?.mintX,
+        mintY: accountQuery.data?.mintY,
+        makerAtaX,
+        vault,
+        escrow: account,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      };
+      // Log the context
+      Object.entries(context).forEach(([key, value]) => {
+        console.log(key, value.toString());
+      });
+      // Take the escrow
+      const tx = await program.methods.refund().accountsStrict(context).rpc();
       // Return the signature
       return {
         signature: tx,
@@ -326,6 +400,7 @@ export function useEscrowProgramAccount({ account }: { account: PublicKey }) {
   return {
     accountQuery,
     takeMutation,
+    refundMutation,
     vaultQuery,
     escrowQuery,
   };

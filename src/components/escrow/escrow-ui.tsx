@@ -8,6 +8,7 @@ import {
   useEscrowProgram,
   useEscrowProgramAccount,
 } from "./escrow-data-access";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 // Very simple escrow creation component
 export function EscrowCreate() {
@@ -82,9 +83,11 @@ export function EscrowList() {
 }
 
 function EscrowCard({ account }: { account: PublicKey }) {
-  const { accountQuery, takeMutation, vaultQuery } = useEscrowProgramAccount({
-    account,
-  });
+  const { accountQuery, takeMutation, vaultQuery, refundMutation } =
+    useEscrowProgramAccount({
+      account,
+    });
+  const { publicKey } = useWallet();
 
   // Memoize the maker's public key, or "..." if the maker query is still loading
   const maker = useMemo(
@@ -93,21 +96,21 @@ function EscrowCard({ account }: { account: PublicKey }) {
   );
 
   // Memoize the mintA, or "..." if the mintA query is still loading
-  const mintA = useMemo(
-    () => accountQuery.data?.mintA.toString() ?? "...",
-    [accountQuery.data?.mintA]
+  const mintX = useMemo(
+    () => accountQuery.data?.mintX.toString() ?? "...",
+    [accountQuery.data?.mintX]
   );
 
   // Memoize the mintB, or "..." if the mintB query is still loading
-  const mintB = useMemo(
-    () => accountQuery.data?.mintB.toString() ?? "...",
-    [accountQuery.data?.mintB]
+  const mintY = useMemo(
+    () => accountQuery.data?.mintY.toString() ?? "...",
+    [accountQuery.data?.mintY]
   );
 
   // Memoize the amount, or "..." if the amount query is still loading
   const amount = useMemo(
-    () => accountQuery.data?.recieve.toString() ?? "...",
-    [accountQuery.data?.recieve]
+    () => accountQuery.data?.amountY.toString() ?? "...",
+    [accountQuery.data?.amountY]
   );
 
   // Memoize the vault amount, or "..." if the vault amount query is still loading
@@ -132,10 +135,10 @@ function EscrowCard({ account }: { account: PublicKey }) {
               Maker: {maker}
             </h2>
             <h2 className=" justify-center text-md cursor-pointer text-primary">
-              Mint A (Taker Receives) {vaultAmount} of {mintA}
+              Mint X (Taker Receives) {vaultAmount} of {mintX}
             </h2>
             <h2 className=" justify-center text-md cursor-pointer text-primary">
-              Mint B (Maker Receives) {amount} of {mintB}
+              Mint Y (Maker Receives) {amount} of {mintY}
             </h2>
           </div>
           <div className="text-center space-y-4">
@@ -146,16 +149,30 @@ function EscrowCard({ account }: { account: PublicKey }) {
                 label={ellipsify(account.toString())}
               />
             </p>
-            {/* Button to take the escrow */}
-            <button
-              className="btn btn-xs btn-secondary btn-outline"
-              onClick={() => {
-                return takeMutation.mutateAsync();
-              }}
-              disabled={takeMutation.isPending}
-            >
-              Take
-            </button>
+            <div className="flex flex-col gap-4">
+              {/* Button to take the escrow */}
+              <button
+                className="btn btn-xs btn-secondary btn-outline"
+                onClick={() => {
+                  return takeMutation.mutateAsync();
+                }}
+                disabled={takeMutation.isPending}
+              >
+                Take
+              </button>
+              {accountQuery.data?.maker.toString() ===
+                publicKey?.toString() && (
+                <button
+                  className="btn btn-xs btn-secondary btn-outline"
+                  onClick={() => {
+                    return refundMutation.mutateAsync();
+                  }}
+                  disabled={refundMutation.isPending}
+                >
+                  Refund
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>

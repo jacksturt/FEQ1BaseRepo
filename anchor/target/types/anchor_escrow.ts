@@ -615,16 +615,16 @@ export type AnchorEscrow = {
       "args": []
     },
     {
-      "name": "schwap",
+      "name": "take",
       "discriminator": [
-        39,
-        169,
-        208,
-        47,
-        189,
-        205,
-        5,
-        186
+        149,
+        226,
+        52,
+        104,
+        6,
+        142,
+        230,
+        39
       ],
       "accounts": [
         {
@@ -1077,6 +1077,10 @@ export type AnchorEscrow = {
           {
             "name": "seed",
             "type": "u64"
+          },
+          {
+            "name": "maker",
+            "type": "pubkey"
           },
           {
             "name": "mintX",

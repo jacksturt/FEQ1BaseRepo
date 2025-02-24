@@ -3,8 +3,7 @@ use anchor_spl::{
     associated_token::AssociatedToken,
     token::Token,
     token_interface::{
-        close_account, transfer_checked, CloseAccount, Mint, TokenAccount, TokenInterface,
-        TransferChecked,
+        close_account, transfer_checked, CloseAccount, Mint, TokenAccount, TransferChecked,
     },
 };
 

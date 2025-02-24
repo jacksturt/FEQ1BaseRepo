@@ -65,6 +65,7 @@ impl<'info> Make<'info> {
             amount_x,
             amount_y,
             bump: bumps.escrow,
+            maker: self.maker.key(),
         });
 
         // Transfer the maker's tokens to the vault

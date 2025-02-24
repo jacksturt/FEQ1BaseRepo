@@ -38,21 +38,4 @@ describe("Counter", () => {
       .then(confirm)
       .then(log);
   });
-
-  it("Initialize Counter", async () => {
-    await program.methods
-      .initialize()
-      .accounts({
-        counter: counterKeypair.publicKey,
-        payer: payer.publicKey,
-      })
-      .signers([counterKeypair])
-      .rpc();
-
-    const currentCount = await program.account.counter.fetch(
-      counterKeypair.publicKey
-    );
-
-    expect(currentCount.count).toEqual(0);
-  });
 });
