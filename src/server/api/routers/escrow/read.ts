@@ -5,14 +5,9 @@ import { z } from "zod";
 export const readEscrow = publicProcedure
   .input(
     z.object({
-      publicKey: z.string(),
+      // TODO: Implement this
     })
   )
   .query(async ({ ctx, input }) => {
-    // Use the globally available db instance from context to find and escrow by public key
-    return ctx.db.escrow.findFirst({
-      where: {
-        publicKey: input.publicKey,
-      },
-    });
+    // TODO: Implement this
   });

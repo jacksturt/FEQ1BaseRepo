@@ -5,14 +5,9 @@ import { z } from "zod";
 export const deleteEscrow = publicProcedure
   .input(
     z.object({
-      publicKey: z.string(),
+      // TODO: Implement this
     })
   )
   .mutation(async ({ ctx, input }) => {
-    // Use the globally available db instance from context to update the escrow
-    return ctx.db.escrow.delete({
-      where: {
-        publicKey: input.publicKey,
-      },
-    });
+    // TODO: Implement this
   });

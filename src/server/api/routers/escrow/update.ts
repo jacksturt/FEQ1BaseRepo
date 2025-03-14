@@ -6,19 +6,9 @@ import { z } from "zod";
 export const addTaker = publicProcedure
   .input(
     z.object({
-      publicKey: z.string(),
-      taker: z.string(),
+      // TODO: Implement this
     })
   )
   .mutation(async ({ ctx, input }) => {
-    // Use the globally available db instance from context to update the escrow
-    return ctx.db.escrow.update({
-      where: {
-        publicKey: input.publicKey,
-      },
-      data: {
-        taker: input.taker,
-        status: EscrowStatus.TAKEN,
-      },
-    });
+    // TODO: Implement this
   });
