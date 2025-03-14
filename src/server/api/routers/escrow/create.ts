@@ -18,15 +18,6 @@ export const createEscrow = publicProcedure
   .mutation(async ({ ctx, input }) => {
     // Use the globally available db instance from context to create the escrow
     return ctx.db.escrow.create({
-      data: {
-        publicKey: input.publicKey,
-        vaultPublicKey: input.vaultPublicKey,
-        mintA: input.mintA,
-        mintB: input.mintB,
-        amountInVault: input.amountInVault,
-        amountToReceive: input.amountToReceive,
-        seed: input.seed,
-        maker: input.publicKey,
-      },
+      data: { ...input },
     });
   });

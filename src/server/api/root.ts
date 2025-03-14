@@ -1,4 +1,3 @@
-import { counterRouter } from "@/server/api/routers/counter";
 import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { escrowRouter } from "./routers/escrow";
 
@@ -8,7 +7,6 @@ import { escrowRouter } from "./routers/escrow";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  counter: counterRouter,
   // Register the escrow router at the top level
   escrow: escrowRouter,
 });
